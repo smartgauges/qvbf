@@ -11,3 +11,12 @@ RESOURCES += qvbf.qrc
 
 CONFIG += static
 
+static {
+
+	win32 {
+
+		#QTPLUGIN += qico
+		QMAKE_LFLAGS += -static -static-libgcc
+	}
+}
+

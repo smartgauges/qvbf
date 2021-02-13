@@ -110,7 +110,7 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 		if (list.size() < 3)
 			continue;
 
-		if (list[1] != '=')
+		if (list[1] != QString('='))
 			continue;
 
 		if (list[0] == "sw_part_number")
