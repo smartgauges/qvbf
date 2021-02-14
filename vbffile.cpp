@@ -57,19 +57,17 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 	//qDebug() << "file size:" << data.size();
 	file.close();
 
-	int offset = data.indexOf(";\r\n\r\n}");
-	if (offset == -1) {
+	int offset = data.indexOf("file_checksum");
+	if (offset != -1) {
 
-		offset = data.indexOf(";\r\n}");
+		offset = data.indexOf("}", offset);
 		if (offset != -1)
-			offset += 4;
+			offset += 1;
 	}
-	else
-		offset += 6;
 
 	if (offset == -1) {
 
-		//qDebug() << "cant find header";
+		qDebug() << "cant find end of header";
 		return false;
 	}
 
@@ -179,9 +177,11 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 		uint16_t crc2 = crc16(block.data);
 
 		qDebug() << "block addr:" << hex << block.addr << " len:" << block.len << " crc1:" << crc1 << " crc2:" << crc2;
+		if (crc1 == crc2) {
 
-		vbf.blocks.push_back(block);
-		vbf.size += block.data.size();
+			vbf.blocks.push_back(block);
+			vbf.size += block.data.size();
+		}
 	}
 
 	return true;
