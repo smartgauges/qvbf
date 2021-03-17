@@ -92,6 +92,8 @@ void main_t::slt_btn_open()
 	list.set(vbf);
 	m_ui->stack->setCurrentIndex(e_page_main);
 
+	load_header();
+
 	QCoreApplication::processEvents();
 	m_ui->view->header()->resizeSections(QHeaderView::ResizeToContents);
 	m_ui->view->expandAll();
@@ -252,9 +254,44 @@ void main_t::open_file_vbf(const QString & fileName)
 	if (vbf_open(fileName, vbf))
 		list.set(vbf);
 
+	load_header();
+
 	QCoreApplication::processEvents();
 	m_ui->view->header()->resizeSections(QHeaderView::ResizeToContents);
 	m_ui->view->expandAll();
+}
+
+void main_t::load_header()
+{
+	const vbf_t & vbf = list.get();
+
+	m_ui->le_part_number->blockSignals(true);
+	m_ui->cb_part_type->blockSignals(true);
+	m_ui->cb_network->blockSignals(true);
+	m_ui->cb_can_frame_format->blockSignals(true);
+	m_ui->sb_ecu_address->blockSignals(true);
+	m_ui->sb_call->blockSignals(true);
+	m_ui->cb_erase->blockSignals(true);
+
+	m_ui->le_part_number->setText(vbf.header.sw_part_number);
+	m_ui->cb_part_type->setCurrentText(vbf.header.sw_part_type);
+	m_ui->cb_network->setCurrentText(vbf.header.network);
+	m_ui->cb_can_frame_format->setCurrentText(vbf.header.can_frame_format);
+	m_ui->sb_ecu_address->setValue(vbf.header.ecu_address);
+	m_ui->sb_call->setValue(vbf.header.call);
+	m_ui->sb_call->setEnabled((vbf.header.sw_part_type == "SBL") ? true : false);
+	m_ui->cb_erase->setChecked(vbf.header.erases.size() ? true : false);
+
+	m_ui->le_part_number->blockSignals(false);
+	m_ui->cb_part_type->blockSignals(false);
+	m_ui->cb_network->blockSignals(false);
+	m_ui->cb_can_frame_format->blockSignals(false);
+	m_ui->sb_ecu_address->blockSignals(false);
+	m_ui->sb_call->blockSignals(false);
+	m_ui->cb_erase->blockSignals(false);
+
+	m_ui->text->clear();
+	m_ui->text->insertPlainText(vbf.header.data);
 }
 
 void main_t::slt_selection_changed(const QItemSelection &)
@@ -271,35 +308,7 @@ void main_t::slt_selection_changed(const QItemSelection &)
 
 		m_ui->stack->setCurrentIndex(e_page_header);
 
-		const vbf_t & vbf = list.get();
-
-		m_ui->le_part_number->blockSignals(true);
-		m_ui->cb_part_type->blockSignals(true);
-		m_ui->cb_network->blockSignals(true);
-		m_ui->cb_can_frame_format->blockSignals(true);
-		m_ui->sb_ecu_address->blockSignals(true);
-		m_ui->sb_call->blockSignals(true);
-		m_ui->cb_erase->blockSignals(true);
-
-		m_ui->le_part_number->setText(vbf.header.sw_part_number);
-		m_ui->cb_part_type->setCurrentText(vbf.header.sw_part_type);
-		m_ui->cb_network->setCurrentText(vbf.header.network);
-		m_ui->cb_can_frame_format->setCurrentText(vbf.header.can_frame_format);
-		m_ui->sb_ecu_address->setValue(vbf.header.ecu_address);
-		m_ui->sb_call->setValue(vbf.header.call);
-		m_ui->sb_call->setEnabled((vbf.header.sw_part_type == "SBL") ? true : false);
-		m_ui->cb_erase->setChecked(vbf.header.erases.size() ? true : false);
-
-		m_ui->le_part_number->blockSignals(false);
-		m_ui->cb_part_type->blockSignals(false);
-		m_ui->cb_network->blockSignals(false);
-		m_ui->cb_can_frame_format->blockSignals(false);
-		m_ui->sb_ecu_address->blockSignals(false);
-		m_ui->sb_call->blockSignals(false);
-		m_ui->cb_erase->blockSignals(false);
-
-		m_ui->text->clear();
-		m_ui->text->insertPlainText(vbf.header.data);
+		load_header();
 
 		m_ui->statusBar->showMessage(tr("Load header"));
 	}

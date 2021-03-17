@@ -21,6 +21,7 @@ class main_t : public QMainWindow
 
 	private:
 		int get_selected_row();
+		void load_header();
 
 	private slots:
 		void slt_btn_open();
