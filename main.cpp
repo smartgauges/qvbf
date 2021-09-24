@@ -62,7 +62,7 @@ main_t::main_t(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::main)
 
 	connect(m_ui->btn_block_open, &QToolButton::clicked, this, &main_t::slt_btn_block_open);
 	connect(m_ui->btn_block_save, &QToolButton::clicked, this, &main_t::slt_btn_block_save);
-	connect(m_ui->sb_block_addr, SIGNAL(valueChanged(int)), this, SLOT(slt_block_changed()));
+	connect(m_ui->sb_block_addr, SIGNAL(valueChanged(double)), this, SLOT(slt_block_changed()));
 
 	m_ui->stack->setCurrentIndex(e_page_main);
 }

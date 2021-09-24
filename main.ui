@@ -365,15 +365,21 @@
             </widget>
            </item>
            <item>
-            <widget class="QSpinBox" name="sb_block_addr">
+            <widget class="SpinBox" name="sb_block_addr">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="prefix">
               <string>0x</string>
              </property>
-             <property name="maximum">
-              <number>2147483647</number>
+             <property name="decimals">
+              <number>0</number>
              </property>
-             <property name="displayIntegerBase">
-              <number>16</number>
+             <property name="maximum">
+              <double>4294967295.000000000000000</double>
              </property>
             </widget>
            </item>
@@ -386,6 +392,20 @@
            </item>
            <item>
             <widget class="QLabel" name="lbl_block_size">
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>crc</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lbl_block_crc">
              <property name="text">
               <string>0</string>
              </property>
@@ -466,6 +486,11 @@
    <extends>QWidget</extends>
    <header>wdg_hexview.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>spinbox.h</header>
   </customwidget>
  </customwidgets>
  <resources>
