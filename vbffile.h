@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QString>
 #include <QVector>
+#include <inttypes.h>
 
 struct block_t
 {

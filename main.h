@@ -37,7 +37,7 @@ class main_t : public QMainWindow
 		void slt_block_changed();
 
 	private:
-		Ui::main *m_ui = 0;
+		Ui::main *m_ui;
 
 		VbfModel list;
 };

@@ -133,20 +133,20 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 			for (int i = 0; i < list.size()/2; i++) {
 
 				erase_t erase;
-				erase.addr = list[2 * i].toLong(&ok, 16);
-				erase.size = list[2 * i + 1].toLong(&ok, 16);
+				erase.addr = list[2 * i].toLongLong(&ok, 16);
+				erase.size = list[2 * i + 1].toLongLong(&ok, 16);
 				vbf.header.erases.push_back(erase);
 			}
 		}
 
 		if (list[0] == "ecu_address")
-			vbf.header.ecu_address = list[2].toLong(&ok, 16);
+			vbf.header.ecu_address = list[2].toLongLong(&ok, 16);
 
 		if (list[0] == "call")
-			vbf.header.call = list[2].toLong(&ok, 16);
+			vbf.header.call = list[2].toLongLong(&ok, 16);
 
 		if (list[0] == "file_checksum")
-			vbf.header.file_checksum = list[2].toLong(&ok, 16);
+			vbf.header.file_checksum = list[2].toLongLong(&ok, 16);
 	}
 	qbuf.close();
 
@@ -162,16 +162,16 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 		block_t block;
 
-		block.addr = qFromBigEndian<quint32>(data.left(4).data());
+		block.addr = qFromBigEndian<quint32>((const uchar *)data.left(4).data());
 		data.remove(0, 4);
 
-		block.len = qFromBigEndian<quint32>(data.left(4).data());
+		block.len = qFromBigEndian<quint32>((const uchar *)data.left(4).data());
 		data.remove(0, 4);
 
 		block.data = data.left(block.len);
 		data.remove(0, block.len);
 
-		uint16_t crc1 = qFromBigEndian<quint16>(data.left(2).data());
+		uint16_t crc1 = qFromBigEndian<quint16>((const uchar *)data.left(2).data());
 		data.remove(0, 2);
 
 		uint16_t crc2 = crc16(block.data);
