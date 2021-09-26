@@ -317,7 +317,12 @@ void main_t::slt_selection_changed(const QItemSelection &)
 		m_ui->sb_block_addr->blockSignals(true);
 		const block_t & block = list.get_block(idx - 1);
 		m_ui->sb_block_addr->setValue(block.addr);
-		m_ui->lbl_block_size->setText(QString("0x%1").arg(block.len, 8, 16, QChar('0')));
+
+		const vbf_t & vbf = list.get();
+		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10)
+			m_ui->lbl_block_size->setText(QString("%1(%2)").arg(block.len).arg(block.data.size()));
+		else
+			m_ui->lbl_block_size->setText(QString("%1").arg(block.len));
 		m_ui->hexview->setData(block.data);
 		m_ui->sb_block_addr->blockSignals(false);
 

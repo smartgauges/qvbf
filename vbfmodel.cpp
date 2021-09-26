@@ -76,7 +76,10 @@ QVariant VbfModel::data(const QModelIndex &index, int role) const
 				else {
 
 					const block_t & block = vbf.blocks[index.row() - 1/*header*/];
-					return block.len;
+					if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10)
+						return QString("%1(%2)").arg(block.len).arg(block.data.size());
+					else
+						return QString("%1").arg(block.len);
 				}
 		}
 	}

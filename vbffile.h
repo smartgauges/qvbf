@@ -31,6 +31,8 @@ struct header_t
 	uint32_t call;
 	QVector <erase_t> erases;
 	uint32_t file_checksum;
+	bool data_format_identifier_exist;
+	uint32_t data_format_identifier;
 
 	header_t()
 	{
@@ -48,6 +50,8 @@ struct header_t
 		call = 0x0;
 		erases.resize(0);
 		file_checksum = 0x0;
+		data_format_identifier_exist = false;
+		data_format_identifier = 0;
 	}
 };
 

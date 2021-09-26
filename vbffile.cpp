@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "vbffile.h"
+#include "lzss.h"
 
 //CRC-32 normal 0x04c11db7 or reverse 0xedb88320
 static uint32_t crc32(const QByteArray & data)
@@ -147,6 +148,12 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 		if (list[0] == "file_checksum")
 			vbf.header.file_checksum = list[2].toLongLong(&ok, 16);
+
+		if (list[0] == "data_format_identifier") {
+
+			vbf.header.data_format_identifier_exist = true;
+			vbf.header.data_format_identifier = list[2].toLongLong(&ok, 16);
+		}
 	}
 	qbuf.close();
 
@@ -173,6 +180,13 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 		uint16_t crc1 = qFromBigEndian<quint16>((const uchar *)data.left(2).data());
 		data.remove(0, 2);
+
+		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10) {
+
+			QByteArray data = decode(block.data);
+			block.data = data;
+			qDebug() << "uncompress:" << data.size();
+		}
 
 		uint16_t crc2 = crc16(block.data);
 
@@ -256,10 +270,22 @@ void vbf_save(const QString & fileName, const vbf_t & vbf)
 		uint32_t addr = qToBigEndian<quint32>(block.addr);
 		file.write((const char *)&addr, sizeof(addr));
 
-		uint32_t len = qToBigEndian<quint32>(block.len);
-		file.write((const char *)&len, sizeof(len));
+		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10) {
 
-		file.write(vbf.blocks[i].data);
+			QByteArray cdata = encode(vbf.blocks[i].data);
+
+			uint32_t len = qToBigEndian<quint32>(cdata.size());
+			file.write((const char *)&len, sizeof(len));
+
+			file.write(cdata);
+		}
+		else {
+
+			uint32_t len = qToBigEndian<quint32>(block.len);
+			file.write((const char *)&len, sizeof(len));
+
+			file.write(vbf.blocks[i].data);
+		}
 
 		uint16_t crc = crc16(block.data);
 		crc = qToBigEndian<quint16>(crc);
@@ -302,6 +328,8 @@ void vbf_update_header(vbf_t & vbf)
 
 	header += "    sw_part_number = \"" + vbf.header.sw_part_number + "\";\r\n";
 	header += "    sw_part_type = " + vbf.header.sw_part_type + ";\r\n";
+	if (vbf.header.data_format_identifier_exist)
+		header += "    data_format_identifier = " + QString("0x%1").arg(vbf.header.data_format_identifier, 2, 16, QChar('0')) + ";\r\n";
 	header += "    network = " + vbf.header.network + ";\r\n";
 	header += "    can_frame_format = " + vbf.header.can_frame_format + ";\r\n";
 	header += "    ecu_address = " + QString("0x%1").arg(vbf.header.ecu_address, 4, 16, QChar('0')) + ";\r\n";
