@@ -112,6 +112,9 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 		if (list[1] != QString('='))
 			continue;
 
+		if (list[0] == "vbf_version")
+			vbf.header.version = list[2];
+
 		if (list[0] == "sw_part_number")
 			vbf.header.sw_part_number = list[2];
 
@@ -161,7 +164,13 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 	data.remove(0, offset);
 
-	qDebug() << "data crc32:" << hex << crc32(data) << vbf.header.file_checksum;
+	uint32_t crc = crc32(data);
+
+	if (crc != vbf.header.file_checksum) {
+
+		qDebug() << "mismatch crc32:" << hex << crc << "header crc:" << hex << vbf.header.file_checksum;
+		return false;
+	}
 
 	vbf.size = 0;
 
@@ -183,14 +192,14 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10) {
 
-			QByteArray data = decode(block.data);
-			block.data = data;
-			qDebug() << "uncompress:" << data.size();
+			QByteArray udata = decode(block.data);
+			block.data = udata;
+			qDebug() << "uncompress block data: " << block.len << " to "<< udata.size();
 		}
 
 		uint16_t crc2 = crc16(block.data);
 
-		qDebug() << "block addr:" << hex << block.addr << " len:" << block.len << " crc1:" << crc1 << " crc2:" << crc2;
+		qDebug().nospace() << "block addr: 0x" << hex << block.addr << " len: 0x" << block.len << " data: 0x" << block.data.size() << " crc1: 0x" << crc1 << " crc2: 0x" << crc2;
 		if (crc1 == crc2) {
 
 			vbf.blocks.push_back(block);
@@ -323,7 +332,8 @@ void vbf_update_header(vbf_t & vbf)
 
 	QByteArray header;
 
-	header += "vbf_version = 2.1;\r\n";
+	QString version = vbf.header.version.isEmpty() ? "2.1" : vbf.header.version;
+	header += "vbf_version = " + version + ";\r\n";
 	header += "header {\r\n";
 
 	header += "    sw_part_number = \"" + vbf.header.sw_part_number + "\";\r\n";

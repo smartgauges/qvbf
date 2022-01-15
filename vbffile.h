@@ -22,6 +22,7 @@ struct erase_t
 
 struct header_t
 {
+	QString version;
 	QByteArray data;
 	QString sw_part_number;
 	QString sw_part_type;
