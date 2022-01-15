@@ -339,14 +339,18 @@ void vbf_update_header(vbf_t & vbf)
 
 	if (vbf.header.erases.size()) {
 
-		header += "    erase = {\r\n";
+		header += "    erase = {\n";
 
 		for (int i = 0; i < vbf.header.erases.size(); i++) {
 
 			const erase_t & erase = vbf.header.erases[i];
-			header += QString("    { 0x%1, 0x%2 }\r\n").arg(erase.addr, 8, 16, QChar('0')). arg(erase.size, 8, 16, QChar('0'));
+			header += QString("    { 0x%1, 0x%2 }").arg(erase.addr, 8, 16, QChar('0')). arg(erase.size, 8, 16, QChar('0'));
+			if (i != (vbf.header.erases.size() - 1))
+				header += ",";
+
+			header += "\n";
 		}
-		header += "    };\r\n";
+		header += "    }; \r\n";
 	}
 
 	header += "    file_checksum = " + QString("0x%1").arg(vbf.header.file_checksum, 8, 16, QChar('0')) + ";\r\n";
