@@ -143,6 +143,8 @@ void main_t::slt_btn_add()
 	m_ui->view->expandAll();
 
 	m_ui->statusBar->showMessage(tr("Add %1").arg(fileName));
+
+	slt_header_changed();
 }
 
 void main_t::slt_btn_import()
