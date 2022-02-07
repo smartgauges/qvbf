@@ -186,11 +186,13 @@ void main_t::slt_btn_block_open()
 	if (idx <= 0)
 		return;
 
+	QString fn = list.get().filename + "." + QString::number(idx - 1) + ".bin";
+
 	QString fileName;
 #ifdef Q_OS_ANDROID
 	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), "/sdcard/Download", tr("bin (*.bin)"));
 #else
-	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), "./", tr("bin (*.bin *.BIN)"));
+	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), fn, tr("bin (*.bin *.BIN)"));
 #endif
 
 	QFile file(fileName);
@@ -230,11 +232,13 @@ void main_t::slt_btn_block_save()
 
 	const block_t & block = list.get_block(idx - 1);
 
+	QString fn = list.get().filename + "." + QString::number(idx - 1) + ".bin";
+
 	QString fileName;
 #ifdef Q_OS_ANDROID
 	fileName = QFileDialog::getSaveFileName(this, tr("Save bin file"), "/sdcard/Downloads", tr("bin (*.bin)"));
 #else
-	fileName = QFileDialog::getSaveFileName(this, tr("Save bin file"), "./", tr("bin (*.bin)"));
+	fileName = QFileDialog::getSaveFileName(this, tr("Save bin file"), fn, tr("bin (*.bin)"));
 #endif
 
 	if (fileName.isEmpty())
