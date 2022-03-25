@@ -35,6 +35,7 @@ class main_t : public QMainWindow
 		void slt_btn_block_save();
 		void slt_header_changed();
 		void slt_block_changed();
+		void slt_btn_about(int);
 
 	private:
 		Ui::main *m_ui;

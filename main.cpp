@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QtEndian>
 #include <QApplication>
+#include <QMessageBox>
 
 #include "main.h"
 #include "ui_main.h"
@@ -64,12 +65,28 @@ main_t::main_t(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::main)
 	connect(m_ui->btn_block_save, &QToolButton::clicked, this, &main_t::slt_btn_block_save);
 	connect(m_ui->sb_block_addr, SIGNAL(valueChanged(double)), this, SLOT(slt_block_changed()));
 
+	connect(m_ui->btn_about, &QToolButton::clicked, this, &main_t::slt_btn_about);
+
 	m_ui->stack->setCurrentIndex(e_page_main);
 }
 
 main_t::~main_t()
 {
 	delete m_ui;
+}
+
+void main_t::slt_btn_about(int)
+{
+	QString os_type = QSysInfo::kernelType();
+	QString os_version = QSysInfo::kernelVersion();
+	QString version = QString("%1").arg(__DATE__);
+
+	QMessageBox::about(this, tr("About qUDS"),
+		tr("<h2>qUDS ") + version + "</h2>"
+		"<p>qVBF is a simple editor of vbf files"
+		"<p>Copyright: &copy; 2022 smartgauges@gmail.com"
+		"<p>Source code: <a href=\"https://github.com/smartgauges/qvbf\">github.com/smartgauges/qvbf</a>"
+		"<p>OS:" + os_type + " " + os_version + "");
 }
 
 void main_t::slt_btn_open()
