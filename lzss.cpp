@@ -1,5 +1,6 @@
 /* LZSS encoder-decoder (Haruhiko Okumura; public domain) */
 
+#include <stdio.h>
 #include "lzss.h"
 
 #define EI 10  /* typically 10..13 */
