@@ -81,8 +81,8 @@ void main_t::slt_btn_about(int)
 	QString os_version = QSysInfo::kernelVersion();
 	QString version = QString("%1").arg(__DATE__);
 
-	QMessageBox::about(this, tr("About qUDS"),
-		tr("<h2>qUDS ") + version + "</h2>"
+	QMessageBox::about(this, tr("About qVBF"),
+		tr("<h2>qVBF ") + version + "</h2>"
 		"<p>qVBF is a simple editor of vbf files"
 		"<p>Copyright: &copy; 2022 smartgauges@gmail.com"
 		"<p>Source code: <a href=\"https://github.com/smartgauges/qvbf\">github.com/smartgauges/qvbf</a>"
