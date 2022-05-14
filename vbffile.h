@@ -79,6 +79,8 @@ struct vbf_t
 
 bool vbf_add(const QString & fileName, vbf_t & vbf);
 
+bool vbf_insert(int idx, const QString & fileName, vbf_t & vbf);
+
 bool vbf_open(const QString & fileName, vbf_t & vbf);
 
 void vbf_export(const vbf_t & vbf);

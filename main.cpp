@@ -148,10 +148,17 @@ void main_t::slt_btn_add()
 	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), "./", tr("bin (*.bin *.BIN)"));
 #endif
 
-	bool ret = list.add(fileName);
+	bool ret = false;
+	int idx = get_selected_row();
+	if (idx <= 0)
+		ret = list.add(fileName);
+	else
+		ret = list.insert(idx, fileName);
+
 	if (!ret) {
 
-		m_ui->statusBar->showMessage(tr("Add %1 failed").arg(fileName));
+		QString msg = (idx > 0) ? tr("Insert %1 failed") : tr("Add %1 failed");
+		m_ui->statusBar->showMessage(msg.arg(fileName));
 		return;
 	}
 
@@ -159,7 +166,8 @@ void main_t::slt_btn_add()
 	m_ui->view->header()->resizeSections(QHeaderView::ResizeToContents);
 	m_ui->view->expandAll();
 
-	m_ui->statusBar->showMessage(tr("Add %1").arg(fileName));
+	QString msg = (idx > 0) ? tr("Inserted %1") : tr("Added %1");
+	m_ui->statusBar->showMessage(msg.arg(fileName));
 
 	slt_header_changed();
 }
@@ -194,6 +202,8 @@ void main_t::slt_view_clicked(const QModelIndex & idx)
 	QCoreApplication::processEvents();
 	m_ui->view->header()->resizeSections(QHeaderView::ResizeToContents);
 	m_ui->view->expandAll();
+
+	slt_header_changed();
 }
 
 void main_t::slt_btn_block_open()
@@ -367,6 +377,7 @@ void main_t::slt_header_changed()
 	header.ecu_address = m_ui->sb_ecu_address->value();
 	header.call = m_ui->sb_call->value();
 	header.erases.clear();
+
 	if (m_ui->cb_erase->isChecked()) {
 
 		for (int32_t i = 0; i < vbf.blocks.size(); i++) {

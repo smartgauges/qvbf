@@ -228,6 +228,27 @@ bool vbf_add(const QString & fileName, vbf_t & vbf)
 	return true;
 }
 
+bool vbf_insert(int idx, const QString & fileName, vbf_t & vbf)
+{
+	if (idx > vbf.blocks.size())
+		return false;
+
+	QFile file(fileName);
+	if (!file.open(QIODevice::ReadOnly))
+		return false;
+
+	block_t block;
+	block.addr = 0;
+	block.data = file.readAll();
+	block.len = block.data.size();
+
+	file.close();
+
+	vbf.blocks.insert(idx, block);
+
+	return true;
+}
+
 void vbf_export(const vbf_t & vbf)
 {
 	for (int32_t i = 0; i < vbf.blocks.size(); i++) {

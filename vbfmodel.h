@@ -38,6 +38,7 @@ class VbfModel : public QAbstractListModel
 		void set(const vbf_t & vbf);
 		const vbf_t & get();
 		bool add(const QString & fileName);
+		bool insert(int idx, const QString & fileName);
 		void rm(int idx);
 		const block_t & get_block(int idx);
 		void update_block(int idx, uint32_t addr, const QByteArray & data);

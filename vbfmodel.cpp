@@ -118,6 +118,18 @@ bool VbfModel::add(const QString & fileName)
 	return r;
 }
 
+bool VbfModel::insert(int idx, const QString & fileName)
+{
+	if (idx > vbf.blocks.size() || idx < 1)
+		return false;
+
+	beginResetModel();
+	bool r = vbf_insert(idx - 1/*header*/, fileName, vbf);
+	endResetModel();
+
+	return r;
+}
+
 void VbfModel::rm(int idx)
 {
 	if (idx > vbf.blocks.size() || idx < 1)
