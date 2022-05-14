@@ -99,6 +99,8 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 			continue;
 
 		line = line.left(line.indexOf(";"));
+		line.replace("=", " = ");
+
 		QStringList list = line.split(QRegExp("[\r\n\t\",{} ]+"), QString::SkipEmptyParts);
 
 		qDebug() << line;
