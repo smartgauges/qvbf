@@ -47,6 +47,22 @@ static uint16_t crc16(const QByteArray & data)
     return crc;
 }
 
+#if QT_VERSION < 0x050700
+template <typename T> inline T qFromUnaligned(const void *src)
+{
+    T dest;
+    const size_t size = sizeof(T);
+    memcpy(&dest, src, size);
+    return dest;
+}
+
+
+template <class T> inline T qFromBigEndian(const void *src)
+{
+    return qFromBigEndian(qFromUnaligned<T>(src));
+}
+#endif
+
 bool vbf_open(const QString & fileName, vbf_t & vbf)
 {
 	QFile file(fileName);

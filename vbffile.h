@@ -12,6 +12,19 @@ struct block_t
 	uint32_t len;
 	QByteArray data;
 	uint16_t crc;
+	uint8_t percent;
+
+	block_t()
+	{
+		reset();
+	}
+
+	void reset()
+	{
+		data.clear();
+		len = 0;
+		percent = 0;
+	}
 };
 
 struct erase_t
@@ -62,6 +75,8 @@ struct vbf_t
 	header_t header;
 	QVector <block_t> blocks;
 	uint32_t size;
+	uint8_t percent;
+	uint8_t block_idx;
 
 	vbf_t()
 	{
@@ -74,6 +89,8 @@ struct vbf_t
 		header.reset();
 		blocks.resize(0);
 		size = 0;
+		percent = 0;
+		block_idx = 0;
 	}
 };
 
