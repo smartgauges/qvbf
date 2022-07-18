@@ -193,7 +193,10 @@ QByteArray decode(const QByteArray & cdata)
 	data_idx = 0;
 
 	QByteArray data;
-	data.reserve(cdata.size()*6);
+	if (cdata.size() < 40 * 1024 * 1024)
+		data.reserve(cdata.size()*6);
+	else
+		data.reserve(cdata.size()*2);
 
 	int i, j, k, r, c;
 
