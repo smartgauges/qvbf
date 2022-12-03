@@ -86,6 +86,8 @@ QByteArray encode(const QByteArray & data)
 	cdata.reserve(data.size());
 
 	data_idx = 0;
+	bit_buffer = 0;
+	bit_mask = 128;
 
 	int i, j, f1, x, y, r, s, bufferend, c;
 
@@ -119,7 +121,8 @@ QByteArray encode(const QByteArray & data)
 					if (buffer[i + j] != buffer[r + j])
 						break;
 				if (j > y) {
-					x = i;  y = j;
+					x = i;
+					y = j;
 				}
 			}
 		}
@@ -203,7 +206,9 @@ QByteArray decode(const QByteArray & cdata)
 	//prepare global variable
 	mask = 0;
 
-	for (i = 0; i < N - F; i++) buffer[i] = ' ';
+	for (i = 0; i < N - F; i++)
+		buffer[i] = ' ';
+
 	//r = N - F;
 	r = 0;
 	while ((c = getbit(cdata, 1)) != EOF) {

@@ -11,6 +11,7 @@ struct block_t
 	uint32_t addr;
 	uint32_t len;
 	QByteArray data;
+	QByteArray cdata;
 	uint16_t crc;
 	uint8_t percent;
 
@@ -45,6 +46,7 @@ struct header_t
 	uint32_t call;
 	QVector <erase_t> erases;
 	uint32_t file_checksum;
+	uint32_t file_checksum_offset;
 	bool data_format_identifier_exist;
 	uint32_t data_format_identifier;
 

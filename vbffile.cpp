@@ -77,6 +77,9 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 	int offset = data.indexOf("file_checksum");
 	if (offset != -1) {
 
+		vbf.header.file_checksum_offset = data.indexOf("0x", offset + 13);
+		offset = data.indexOf("}", offset);
+
 		offset = data.indexOf("}", offset);
 		if (offset != -1)
 			offset += 1;
@@ -210,6 +213,7 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10) {
 
+			block.cdata = block.data;
 			QByteArray udata = decode(block.data);
 			block.data = udata;
 			qDebug() << "uncompress block data: " << block.len << " to "<< udata.size();
@@ -309,36 +313,53 @@ void vbf_save(const QString & fileName, const vbf_t & vbf)
 	if (!file.open(QIODevice::WriteOnly))
 		return;
 
-	file.write(vbf.header.data);
-
+	QByteArray data;
 	for (int32_t i = 0; i < vbf.blocks.size(); i++) {
 
 		const block_t & block = vbf.blocks[i];
 
 		uint32_t addr = qToBigEndian<quint32>(block.addr);
-		file.write((const char *)&addr, sizeof(addr));
+		QByteArray a((const char *)&addr, sizeof(addr));
+		data += a;
 
 		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10) {
 
-			QByteArray cdata = encode(vbf.blocks[i].data);
+			QByteArray cdata = encode(block.data);
+			//QByteArray cdata = block.cdata;
+			qDebug() << "compress block data: " << block.data.size() << " to "<< cdata.size();
 
 			uint32_t len = qToBigEndian<quint32>(cdata.size());
-			file.write((const char *)&len, sizeof(len));
+			QByteArray l((const char *)&len, sizeof(len));
+			data += l;
 
-			file.write(cdata);
+			data += cdata;
 		}
 		else {
 
 			uint32_t len = qToBigEndian<quint32>(block.len);
-			file.write((const char *)&len, sizeof(len));
+			QByteArray l((const char *)&len, sizeof(len));
+			data += l;
 
-			file.write(vbf.blocks[i].data);
+			data += block.data;
 		}
 
 		uint16_t crc = crc16(block.data);
 		crc = qToBigEndian<quint16>(crc);
-		file.write((const char *)&crc, sizeof(crc));
+		QByteArray c((const char *)&crc, sizeof(crc));
+		data += c;
 	}
+
+	QByteArray header = vbf.header.data;
+	if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10) {
+
+		uint32_t crc = crc32(data);
+		QByteArray ba = QString("0x%1").arg(crc, 8, 16, QChar('0')).toLatin1();
+		header.replace(vbf.header.file_checksum_offset, ba.size(), ba);
+	}
+
+	file.write(header);
+
+	file.write(data);
 
 	file.close();
 }
@@ -402,6 +423,7 @@ void vbf_update_header(vbf_t & vbf)
 		header += "    }; \r\n";
 	}
 
+	vbf.header.file_checksum_offset = header.size() + 20;
 	header += "    file_checksum = " + QString("0x%1").arg(vbf.header.file_checksum, 8, 16, QChar('0')) + ";\r\n";
 
 	header += "}";
