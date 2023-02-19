@@ -145,6 +145,13 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 		if (list[0] == "can_frame_format")
 			vbf.header.can_frame_format = list[2];
 
+		//vbf_version 2.2 and above
+		if (list[0] == "frame_format") {
+
+			vbf.header.can_frame_format = list[2];
+			vbf.header.frame_format = true;
+		}
+
 		if (list[0] == "network")
 			vbf.header.network = list[2];
 
@@ -401,7 +408,10 @@ void vbf_update_header(vbf_t & vbf)
 	if (vbf.header.data_format_identifier_exist)
 		header += "    data_format_identifier = " + QString("0x%1").arg(vbf.header.data_format_identifier, 2, 16, QChar('0')) + ";\r\n";
 	header += "    network = " + vbf.header.network + ";\r\n";
-	header += "    can_frame_format = " + vbf.header.can_frame_format + ";\r\n";
+	if (vbf.header.frame_format)
+		header += "    frame_format = " + vbf.header.can_frame_format + ";\r\n";
+	else
+		header += "    can_frame_format = " + vbf.header.can_frame_format + ";\r\n";
 	header += "    ecu_address = " + QString("0x%1").arg(vbf.header.ecu_address, 4, 16, QChar('0')) + ";\r\n";
 
 	if (vbf.header.sw_part_type == "SBL")

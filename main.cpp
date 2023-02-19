@@ -36,8 +36,10 @@ main_t::main_t(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::main)
 	m_ui->cb_network->addItem("{ CAN_MS, SUB_MOST }");
 	connect(m_ui->cb_network, SIGNAL(currentIndexChanged(int)), this, SLOT(slt_header_changed()));
 
-	m_ui->cb_can_frame_format->addItem("STANDART");
+	m_ui->cb_can_frame_format->addItem("STANDARD");
 	m_ui->cb_can_frame_format->addItem("EXTENDED");
+	m_ui->cb_can_frame_format->addItem("CAN_STANDARD");
+	m_ui->cb_can_frame_format->addItem("CAN_EXTENDED");
 	connect(m_ui->cb_can_frame_format, SIGNAL(currentIndexChanged(int)), this, SLOT(slt_header_changed()));
 
 	connect(m_ui->sb_ecu_address, SIGNAL(valueChanged(int)), this, SLOT(slt_header_changed()));

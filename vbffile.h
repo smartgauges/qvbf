@@ -42,6 +42,7 @@ struct header_t
 	QString sw_part_type;
 	QString network;
 	QString can_frame_format;
+	bool frame_format;
 	uint32_t ecu_address;
 	uint32_t call;
 	QVector <erase_t> erases;
@@ -62,6 +63,7 @@ struct header_t
 		sw_part_type = QString();
 		network = QString();
 		can_frame_format = QString();
+		frame_format = false;
 		ecu_address = 0x0;
 		call = 0x0;
 		erases.resize(0);
