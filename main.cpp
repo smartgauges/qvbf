@@ -378,9 +378,11 @@ void main_t::slt_header_changed()
 	header.can_frame_format = m_ui->cb_can_frame_format->currentText();
 	header.ecu_address = m_ui->sb_ecu_address->value();
 	header.call = m_ui->sb_call->value();
-	header.erases.clear();
 
-	if (m_ui->cb_erase->isChecked()) {
+	if (!m_ui->cb_erase->isChecked())
+		header.erases.clear();
+
+	if (m_ui->cb_erase->isChecked() && !header.erases.size()) {
 
 		for (int32_t i = 0; i < vbf.blocks.size(); i++) {
 
