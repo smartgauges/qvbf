@@ -29,11 +29,14 @@ main_t::main_t(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::main)
 	m_ui->cb_part_type->addItem("CUSTOM");
 	m_ui->cb_part_type->addItem("GBL");
 	m_ui->cb_part_type->addItem("SIGCFG");
+	m_ui->cb_part_type->addItem("TEST");
 	connect(m_ui->cb_part_type, SIGNAL(currentIndexChanged(int)), this, SLOT(slt_header_changed()));
 
 	m_ui->cb_network->addItem("CAN_MS");
 	m_ui->cb_network->addItem("CAN_HS");
 	m_ui->cb_network->addItem("{ CAN_MS, SUB_MOST }");
+	m_ui->cb_network->addItem("FLEXRAY");
+	m_ui->cb_network->addItem("DOIP");
 	connect(m_ui->cb_network, SIGNAL(currentIndexChanged(int)), this, SLOT(slt_header_changed()));
 
 	m_ui->cb_can_frame_format->addItem("STANDARD");
@@ -94,11 +97,7 @@ void main_t::slt_btn_about(int)
 void main_t::slt_btn_open()
 { 
 	QString fileName;
-#ifdef Q_OS_ANDROID
-	fileName = QFileDialog::getOpenFileName(this, tr("Open vbf file"), "/sdcard/Download", tr("vbf (*.vbf)"));
-#else
 	fileName = QFileDialog::getOpenFileName(this, tr("Open vbf file"), "./", tr("vbf (*.vbf *.VBF)"));
-#endif
 
 	vbf_t vbf;
 	bool ret = vbf_open(fileName, vbf);
@@ -125,11 +124,7 @@ void main_t::slt_btn_open()
 void main_t::slt_btn_save()
 {
 	QString fileName;
-#ifdef Q_OS_ANDROID
-	fileName = QFileDialog::getSaveFileName(this, tr("Save vbf file"), "/sdcard/Downloads", tr("vbf (*.vbf)"));
-#else
 	fileName = QFileDialog::getSaveFileName(this, tr("Save vbf file"), "./", tr("vbf (*.vbf)"));
-#endif
 
 	if (fileName.isEmpty())
 		return;
@@ -144,11 +139,7 @@ void main_t::slt_btn_save()
 void main_t::slt_btn_add()
 {
 	QString fileName;
-#ifdef Q_OS_ANDROID
-	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), "/sdcard/Download", tr("bin (*.bin)"));
-#else
 	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), "./", tr("bin (*.bin *.BIN)"));
-#endif
 
 	bool ret = false;
 	int idx = get_selected_row();
@@ -218,11 +209,7 @@ void main_t::slt_btn_block_open()
 	QString fn = list.get().filename + "." + QString::number(idx - 1) + ".bin";
 
 	QString fileName;
-#ifdef Q_OS_ANDROID
-	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), "/sdcard/Download", tr("bin (*.bin)"));
-#else
 	fileName = QFileDialog::getOpenFileName(this, tr("Open bin file"), fn, tr("bin (*.bin *.BIN)"));
-#endif
 
 	QFile file(fileName);
 	if (!file.open(QIODevice::ReadOnly))
@@ -264,11 +251,7 @@ void main_t::slt_btn_block_save()
 	QString fn = list.get().filename + "." + QString::number(idx - 1) + ".bin";
 
 	QString fileName;
-#ifdef Q_OS_ANDROID
-	fileName = QFileDialog::getSaveFileName(this, tr("Save bin file"), "/sdcard/Downloads", tr("bin (*.bin)"));
-#else
 	fileName = QFileDialog::getSaveFileName(this, tr("Save bin file"), fn, tr("bin (*.bin)"));
-#endif
 
 	if (fileName.isEmpty())
 		return;
