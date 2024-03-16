@@ -5,6 +5,8 @@
 #include <QtEndian>
 #include <QApplication>
 #include <QMessageBox>
+#include <QDateTime>
+#include <QLoggingCategory>
 
 #include "main.h"
 #include "ui_main.h"
@@ -16,9 +18,12 @@ enum e_page
 	e_page_block,
 };
 
+main_t * main_t::ptr = NULL;
 main_t::main_t(QWidget *parent) : QMainWindow(parent), m_ui(new Ui::main)
 {
 	m_ui->setupUi(this);
+
+	main_t::ptr = this;
 
 	connect(m_ui->le_part_number, SIGNAL(textChanged(const QString &)), this, SLOT(slt_header_changed()));
 
@@ -124,7 +129,7 @@ void main_t::slt_btn_open()
 void main_t::slt_btn_save()
 {
 	QString fileName;
-	fileName = QFileDialog::getSaveFileName(this, tr("Save vbf file"), "./", tr("vbf (*.vbf)"));
+	fileName = QFileDialog::getSaveFileName(this, tr("Save vbf file"), QString(".") + QDir::separator() + QString("new.vbf"), tr("vbf (*.vbf)"));
 
 	if (fileName.isEmpty())
 		return;
@@ -408,11 +413,50 @@ void main_t::slt_block_changed()
 	}
 }
 
+void main_t::slt_log(uint8_t lvl, const QString & txt)
+{
+	QDateTime dt = QDateTime::currentDateTime();
+	QString st = dt.toString("hh:mm:ss.z");
+	if (lvl == e_log_warn)
+		m_ui->log->appendHtml(st + " " + "<font color = \"red\">" + txt + "</font>");
+	else if (lvl == e_log_debug)
+		m_ui->log->appendHtml(st + " " + "<font color = \"blue\">" + txt + "</font>");
+	else
+		m_ui->log->appendPlainText(st + " " + txt);
+}
+
+void main_t::QDebugMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+	QString message = qFormatLogMessage(type, context, msg);
+
+	e_log_level lvl = e_log_info;
+
+	switch(type) {
+		case QtMsgType::QtDebugMsg:
+			lvl = e_log_debug;
+			break;
+		case QtMsgType::QtWarningMsg:
+			lvl = e_log_warn;
+			break;
+		default:
+			lvl = e_log_info;
+			break;
+	}
+
+	if (main_t::ptr) {
+		main_t::ptr->main_t::slt_log(lvl, qPrintable(message));
+		QCoreApplication::processEvents();
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
+	QLoggingCategory::setFilterRules("*.debug=true\n""qt.*.debug=false");
+
 	main_t w;
+	qInstallMessageHandler(main_t::QDebugMessageHandler);
 	w.show();
 
 	if (argc == 2) {
