@@ -6,12 +6,16 @@
 #include <QVector>
 #include <inttypes.h>
 
+#define CHUNK_SIZE (1*1024*1024)
+#define HEADER_LIMIT_SIZE (1*1024*1024)
+#define BLOCK_LIMIT_SIZE (1*1024*1024*1024)
+
 struct block_t
 {
 	uint32_t addr;
 	uint32_t len;
+	uint32_t offset;
 	QByteArray data;
-	QByteArray cdata;
 	uint16_t crc;
 	uint8_t percent;
 
@@ -22,9 +26,11 @@ struct block_t
 
 	void reset()
 	{
-		data.clear();
+		addr = 0;
 		len = 0;
+		offset = 0;
 		percent = 0;
+		data.clear();
 	}
 };
 
@@ -98,17 +104,19 @@ struct vbf_t
 	}
 };
 
+bool vbf_open(const QString & fileName, vbf_t & vbf);
+
+void vbf_save(const QString & fileName, const vbf_t & vbf);
+
 bool vbf_add(const QString & fileName, vbf_t & vbf);
 
 bool vbf_insert(int idx, const QString & fileName, vbf_t & vbf);
 
-bool vbf_open(const QString & fileName, vbf_t & vbf);
+bool vbf_export_block(int idx, const QString & fileName, const vbf_t & vbf);
 
 void vbf_export(const vbf_t & vbf);
 
 void vbf_import(vbf_t & vbf);
-
-void vbf_save(const QString & fileName, const vbf_t & vbf);
 
 void vbf_update_header(vbf_t & vbf);
 

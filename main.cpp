@@ -254,8 +254,6 @@ void main_t::slt_btn_block_save()
 	if (idx <= 0)
 		return;
 
-	const block_t & block = list.get_block(idx - 1);
-
 	QString fn = list.get().filename + "." + QString::number(idx - 1) + ".bin";
 
 	QString fileName;
@@ -264,14 +262,10 @@ void main_t::slt_btn_block_save()
 	if (fileName.isEmpty())
 		return;
 
-	QFile file(fileName);
-	if (!file.open(QIODevice::WriteOnly))
-		return;
+	const vbf_t & vbf = list.get();
+	vbf_export_block(idx - 1, fileName, vbf);
 
-	file.write(block.data);
-	file.close();
-
-	m_ui->statusBar->showMessage(tr("Save block %1 to %2").arg(idx).arg(fileName));
+	m_ui->statusBar->showMessage(tr("Saved block %1 to %2").arg(idx).arg(fileName));
 }
 
 void main_t::open_file_vbf(const QString & fileName)
@@ -345,10 +339,19 @@ void main_t::slt_selection_changed(const QItemSelection &)
 		m_ui->sb_block_addr->setValue(block.addr);
 
 		const vbf_t & vbf = list.get();
+		QString slen;
 		if (vbf.header.data_format_identifier_exist && vbf.header.data_format_identifier == 0x10)
-			m_ui->lbl_block_size->setText(QString("%1(%2)").arg(block.len).arg(block.data.size()));
+			slen = QString("%1(%2)").arg(block.len).arg(block.data.size());
 		else
-			m_ui->lbl_block_size->setText(QString("%1").arg(block.len));
+			slen = QString("%1").arg(block.len);
+
+		m_ui->lbl_block_size->setStyleSheet("QLabel {}");
+		if (block.len > BLOCK_LIMIT_SIZE) {
+			slen += " only first 1GB";
+			m_ui->lbl_block_size->setStyleSheet("QLabel { background-color : red }");
+		}
+		m_ui->lbl_block_size->setText(slen);
+
 		m_ui->hexview->setData(&block.data);
 		m_ui->sb_block_addr->blockSignals(false);
 
