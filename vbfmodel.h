@@ -41,7 +41,8 @@ class VbfModel : public QAbstractListModel
 		bool insert(int idx, const QString & fileName);
 		void rm(int idx);
 		const block_t & get_block(int idx);
-		void update_block(int idx, uint32_t addr, const QByteArray & data);
+		void update_block(int idx, uint32_t addr);
+		void update_block(int idx, const QByteArray & data);
 		void update_header(struct header_t & header);
 };
 

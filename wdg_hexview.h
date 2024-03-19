@@ -9,16 +9,15 @@ class wdg_hexview: public QAbstractScrollArea
 	public:
 		wdg_hexview(QWidget *parent = 0);
 		~wdg_hexview();
-		const QByteArray & getData();
 
 	public slots:
-		void setData(const QByteArray & data);
+		void setData(const QByteArray * data);
 
 	protected:
 		void paintEvent(QPaintEvent *event);
 
 	private:
-		QByteArray m_data;
+		const QByteArray * m_data;
 		std::size_t m_posAddr; 
 		std::size_t m_posHex;
 		std::size_t m_posAscii;

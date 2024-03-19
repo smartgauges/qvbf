@@ -195,6 +195,7 @@ void main_t::slt_view_clicked(const QModelIndex & idx)
 
 	m_ui->view->selectionModel()->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 
+	m_ui->hexview->setData(NULL);
 	list.rm(idx.row());
 
 	QCoreApplication::processEvents();
@@ -223,7 +224,9 @@ void main_t::slt_btn_block_open()
 	QByteArray data = file.readAll();
 	file.close();
 
-	m_ui->hexview->setData(data);
+	list.update_block(idx - 1, data);
+	const block_t & block = list.get_block(idx - 1);
+	m_ui->hexview->setData(&block.data);
 
 	m_ui->statusBar->showMessage(tr("Update block %1 with %2 content").arg(idx).arg(fileName));
 
@@ -346,7 +349,7 @@ void main_t::slt_selection_changed(const QItemSelection &)
 			m_ui->lbl_block_size->setText(QString("%1(%2)").arg(block.len).arg(block.data.size()));
 		else
 			m_ui->lbl_block_size->setText(QString("%1").arg(block.len));
-		m_ui->hexview->setData(block.data);
+		m_ui->hexview->setData(&block.data);
 		m_ui->sb_block_addr->blockSignals(false);
 
 		m_ui->statusBar->showMessage(tr("Load block %1").arg(idx));
@@ -405,7 +408,7 @@ void main_t::slt_block_changed()
 
 	if (idx <= list.size()) {
 
-		list.update_block(idx - 1, m_ui->sb_block_addr->value(), m_ui->hexview->getData());
+		list.update_block(idx - 1, m_ui->sb_block_addr->value());
 
 		m_ui->statusBar->showMessage(tr("Update block %1 and header").arg(idx));
 

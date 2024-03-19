@@ -153,7 +153,7 @@ const block_t & VbfModel::get_block(int idx)
 	return vbf.blocks[idx];
 }
 
-void VbfModel::update_block(int idx, uint32_t addr, const QByteArray & data)
+void VbfModel::update_block(int idx, uint32_t addr)
 {
 	if (idx > vbf.blocks.size())
 		return;
@@ -161,6 +161,15 @@ void VbfModel::update_block(int idx, uint32_t addr, const QByteArray & data)
 	block_t & block = vbf.blocks[idx];
 
 	block.addr = addr;
+}
+
+void VbfModel::update_block(int idx, const QByteArray & data)
+{
+	if (idx > vbf.blocks.size())
+		return;
+
+	block_t & block = vbf.blocks[idx];
+
 	block.data = data;
 	block.len = block.data.size();
 }
