@@ -116,8 +116,29 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 
 	infile.seek(0);
 	h = infile.read(HEADER_LIMIT_SIZE);
-	offset = h.indexOf("file_checksum");
+
+	//looking for such template: header { }
+	offset = h.indexOf("header {");
 	if (offset == -1) {
+		qWarning() << "can't find begin of header";
+		infile.close();
+		return false;
+	}
+	offset += sizeof"header {";
+	size_t left_braces = 1;
+	size_t right_braces = 0;
+	while (offset < h.size()) {
+		if (h[offset] == '}')
+			right_braces++;
+		if (h[offset] == '{')
+			left_braces++;
+		if (left_braces == right_braces)
+			break;
+		offset++;
+	}
+	//qDebug().nospace() << "offset: 0x" << hex << offset << " left_braces:" << left_braces << " right_braces:" << right_braces;
+
+	if (left_braces != right_braces) {
 		qWarning() << "can't find end of header";
 		infile.close();
 		return false;
@@ -250,7 +271,7 @@ bool vbf_open(const QString & fileName, vbf_t & vbf)
 		crc32 = crc32_calc(crc32, QByteArray(_len, 4));
 		block.len = qFromBigEndian<quint32>(_len);
 
-		qDebug() << "found block with size" << block.len << ", loading ...";
+		qDebug().nospace() << "found block addr:0x" << hex << block.addr << " with size:0x" << hex << block.len << ", loading ...";
 		block.data.reserve((block.len < BLOCK_LIMIT_SIZE) ? block.len : BLOCK_LIMIT_SIZE);
 
 		block.offset = infile.pos();
